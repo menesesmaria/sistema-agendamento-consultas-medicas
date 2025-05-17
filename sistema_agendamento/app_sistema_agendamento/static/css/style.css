@@ -1,3 +1,40 @@
-body {
-    background-color: yellow;
+:root {
+  --primary-color: #313240;
+  --secondary-color: #FFF;
+}
+
+.pag-index {
+    background-color: var(--primary-color);
+    font-family: "Poppins", sans-serif;
+}
+
+.pag-index h1 {
+    color: var(--secondary-color);
+}
+
+.pag-index .container {
+  display: flex;
+  flex-direction: column;  
+  justify-content: center;  
+  align-items: center;    
+  height: 100vh;           
+  text-align: center;       
+}
+
+.pag-agendar .container{
+  margin-top: 30px;
+}
+
+.pag-cadastrar .container {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.pag-cadastrar form {
+  margin-bottom: 20px;
+}
+
+.pag-cadastrar .alert {
+  margin-top: 30px;
+  width: 1020px;
 }
