@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Pacientes</title>
+</head>
+<body>
+    <h1>Pacientes</h1>
+    <ul>
+    {% for paciente in pacientes %}
+        <li>{{ paciente.nome }}</li>
+    {% endfor %}
+
+    <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Agendar</button>
+</form>
+    </ul>
+</body>
+</html>
