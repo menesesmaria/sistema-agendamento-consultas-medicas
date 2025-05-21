@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <title>Sistema de Agendamento de Consultas Médicas</title>
+  </head>
+  <body class="pag-cadastrar">
+    <div class="container">
+      <div class="accordion" id="accordionExample">
+        <div class="card">
+          <div class="card-header" id="headingOne">
+            <h5 class="mb-0">
+              <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                <h2>Cadastrar Paciente</h2>
+              </button>
+            </h5>
+          </div>
+
+          <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+            <div class="card-body">
+              <div class="alert alert-danger" role="alert">
+                * indica campo obrigatório
+              </div>
+              <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-row">
+                  <div class="col-md-5 mb-3">
+                    <label for="id_nome">Nome Completo*</label>
+                    {{ form.nome }}
+                    {% if form.nome.errors %}
+                      <div class="alert alert-danger">{{ form.nome.errors }}</div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <label for="id_telefone">Telefone*</label>
+                    {{ form.telefone }}
+                    {% if form.telefone.errors %}
+                      <div class="alert alert-danger">{{ form.telefone.errors }}</div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <label for="id_email">E-mail*</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                      <div class="alert alert-danger">{{ form.email.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+                
+                <div class="form-row">
+                  <div class="col-md-3 mb-3">
+                    <label for="id_cpf">CPF*</label>
+                    {{ form.cpf }}
+                    {% if form.cpf.errors %}
+                      <div class="alert alert-danger">{{ form.cpf.errors }}</div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="id_data_nascimento">Data de Nascimento*</label>
+                    {{ form.data_nascimento }}
+                    {% if form.data_nascimento.errors %}
+                      <div class="alert alert-danger">{{ form.data_nascimento.errors }}</div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="id_sexo">Sexo*</label>
+                    {{ form.sexo }}
+                    {% if form.sexo.errors %}
+                      <div class="alert alert-danger">{{ form.sexo.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+                
+                <div class="form-row">
+                  <div class="col-md-3 mb-3">
+                    <label for="id_bairro">Bairro*</label>
+                    {{ form.bairro }}
+                    {% if form.bairro.errors %}
+                      <div class="alert alert-danger">{{ form.bairro.errors }}</div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="id_rua">Rua*</label>
+                    {{ form.rua }}
+                    {% if form.rua.errors %}
+                      <div class="alert alert-danger">{{ form.rua.errors }}</div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="id_numero_residencia">Número da Residência*</label>
+                    {{ form.numero_residencia }}
+                    {% if form.numero_residencia.errors %}
+                      <div class="alert alert-danger">{{ form.numero_residencia.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+                
+                <div class="form-row">
+                  <div class="col-md-2 mb-3">
+                    <label for="id_cep">CEP*</label>
+                    {{ form.cep }}
+                    {% if form.cep.errors %}
+                      <div class="alert alert-danger">{{ form.cep.errors }}</div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-11 mb-3">
+                    <label for="id_obs_medicas">Observações Médicas</label>
+                    {{ form.obs_medicas }}
+                    {% if form.obs_medicas.errors %}
+                      <div class="alert alert-danger">{{ form.obs_medicas.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+                
+                <button class="btn btn-primary" type="submit">Enviar</button>
+              </form> 
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" id="headingTwo">
+            <h5 class="mb-0">
+              <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                Grupo de itens colapsável #2
+              </button>
+            </h5>
+          </div>
+          <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+            <div class="card-body">
+              Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch.
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" id="headingThree">
+            <h5 class="mb-0">
+              <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                Grupo de itens colapsável #3
+              </button>
+            </h5>
+          </div>
+          <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+            <div class="card-body">
+              Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  </body>
+</html>
