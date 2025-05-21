@@ -4,8 +4,3 @@ from django.shortcuts import render
 def index(request):
     return render(request,'index.html')
 
-def agendar(request):
-    return render(request, 'agendar.html')
-
-def cadastrar(request):
-    return render(request, 'cadastrar.html')

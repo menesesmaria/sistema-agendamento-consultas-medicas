@@ -1,3 +1,11 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import (
+    EspecialidadeMedica, EspecialidadeConsulta, PlanoSaude, Paciente, Profissional,
+    DisponibilidadeMedico, HorarioDisponivel, Consulta, PacientePlano, ProfissionalPlano
+)
+
+admin.site.register([
+    EspecialidadeMedica, EspecialidadeConsulta, PlanoSaude, Paciente, Profissional,
+    DisponibilidadeMedico, HorarioDisponivel, Consulta, PacientePlano, ProfissionalPlano
+])

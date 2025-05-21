@@ -21,6 +21,4 @@ from app_sistema_agendamento import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.index, name='index'),
-    path('agendar/', views.agendar, name='agendar'),
-    path('cadastrar/', views.cadastrar, name='cadastrar'),
 ]
