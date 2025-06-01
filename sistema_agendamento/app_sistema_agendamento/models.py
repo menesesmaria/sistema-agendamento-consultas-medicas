@@ -2,16 +2,18 @@ from django.db import models
 
 # Create your models here.
 
-class EspecialidadeMedica(models.Model):
+class Especialidade(models.Model):
     nome = models.CharField(max_length=100, null=True, blank=True)
     descricao = models.TextField(null=True, blank=True)
 
-class EspecialidadeConsulta(models.Model):
-    nome = models.CharField(max_length=100, null=True, blank=True)
-    descricao = models.TextField(null=True, blank=True)
+    def __str__(self):
+        return self.nome 
 
 class PlanoSaude(models.Model):
     nome = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return self.nome 
 
 class Paciente(models.Model):
     nome = models.CharField(max_length=100, null=True, blank=True)
@@ -26,6 +28,9 @@ class Paciente(models.Model):
     cep = models.CharField(max_length=8)
     sexo = models.CharField(max_length=5)
 
+    def __str__(self):
+        return f"{self.nome} - CPF: {self.cpf}"
+
 class Profissional(models.Model):
     nome = models.CharField(max_length=100, null=True, blank=True)
     sexo = models.CharField(max_length=5, null=True, blank=True)
@@ -35,52 +40,42 @@ class Profissional(models.Model):
     tempo_experiencia = models.CharField(max_length=15, null=True, blank=True)
     nivel = models.CharField(max_length=50, null=True, blank=True)
     instituicao_formacao = models.CharField(max_length=100, null=True, blank=True)
-    especialidade_medica = models.ForeignKey(EspecialidadeMedica, on_delete=models.SET_NULL, null=True)
+    especialidade_medica = models.ForeignKey(Especialidade, on_delete=models.SET_NULL, null=True)
     bairro = models.CharField(max_length=30)
     rua = models.CharField(max_length=30)
     numero_residencia = models.IntegerField()
     cep = models.CharField(max_length=8)
     cpf = models.CharField(max_length=20)
 
-class DisponibilidadeMedico(models.Model):
-    DIAS_SEMANA = [
-        ('Segunda', 'Segunda'),
-        ('Terça', 'Terça'),
-        ('Quarta', 'Quarta'),
-        ('Quinta', 'Quinta'),
-        ('Sexta', 'Sexta'),
-        ('Sábado', 'Sábado'),
-        ('Domingo', 'Domingo'),
-    ]
-    profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
-    dia_semana = models.CharField(max_length=10, choices=DIAS_SEMANA)
-    horario_inicio = models.TimeField()
-    horario_fim = models.TimeField()
-    duracao_consulta = models.IntegerField()
-    ativo = models.BooleanField(default=True)
+    def __str__(self):
+        return f"{self.nome} - {self.especialidade_medica}"
 
-class HorarioDisponivel(models.Model):
-    disponibilidade = models.ForeignKey(DisponibilidadeMedico, on_delete=models.CASCADE)
+class Disponibilidade(models.Model):
+    profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
     data_horario = models.DateTimeField()
+    duracao_consulta = models.IntegerField(null=True, blank=True)
     disponivel = models.BooleanField(default=True)
     bloqueado = models.BooleanField(default=False)
+
+    def __str__(self):
+        status = "Disponível" if self.disponivel else "Indisponível"
+        return f"{self.profissional} - {self.data_horario.strftime('%d/%m/%Y %H:%M')} ({status})"
 
 class Consulta(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.SET_NULL, null=True)
     profissional = models.ForeignKey(Profissional, on_delete=models.SET_NULL, null=True)
-    especialidade_consulta = models.ForeignKey(EspecialidadeConsulta, on_delete=models.SET_NULL, null=True)
-    horario = models.ForeignKey(HorarioDisponivel, on_delete=models.SET_NULL, null=True)
-    data = models.DateField(null=True, blank=True)
-    horario_consulta = models.TimeField(null=True, blank=True)
-    duracao_estimada = models.IntegerField(null=True, blank=True)
-    duracao_final = models.IntegerField(null=True, blank=True)
+    especialidade = models.ForeignKey(Especialidade, on_delete=models.SET_NULL, null=True)
+    disponibilidade = models.ForeignKey(Disponibilidade, on_delete=models.SET_NULL, null=True, blank=True)
     situacao = models.CharField(max_length=50, null=True, blank=True)
     pagamento = models.CharField(max_length=50, null=True, blank=True)
-    convenio = models.CharField(max_length=100, null=True, blank=True)
+    plano_saude = models.ForeignKey(PlanoSaude, on_delete=models.SET_NULL, null=True)
     descricao = models.TextField(null=True, blank=True)
     prescricao = models.TextField(null=True, blank=True)
     diagnostico = models.TextField(null=True, blank=True)
     exames_solicitados = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Consulta de {self.paciente} com {self.profissional} em {self.disponibilidade.data_horario.strftime('%d/%m/%Y %H:%M')}"
 
 class PacientePlano(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
@@ -91,9 +86,17 @@ class PacientePlano(models.Model):
     class Meta:
         unique_together = (('paciente', 'plano'),)
 
+    def __str__(self):
+        return f"{self.paciente} - {self.plano}"
+
 class ProfissionalPlano(models.Model):
     profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
     plano = models.ForeignKey(PlanoSaude, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.profissional} - {self.plano}"
+
     class Meta:
         unique_together = (('profissional', 'plano'),)
+
+
