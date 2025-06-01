@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 01/06/2025 às 03:32
+-- Tempo de geração: 01/06/2025 às 21:00
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -33,13 +33,13 @@ CREATE TABLE `consulta` (
   `profissional_id` int(11) DEFAULT NULL,
   `especialidade_id` int(11) DEFAULT NULL,
   `disponibilidade_id` int(11) DEFAULT NULL,
-  `situacao` varchar(50) DEFAULT NULL,
-  `pagamento` varchar(50) DEFAULT NULL,
+  `situacao` varchar(50) NOT NULL,
+  `pagamento` varchar(50) NOT NULL,
   `plano_saude_id` int(11) DEFAULT NULL,
-  `descricao` text DEFAULT NULL,
-  `prescricao` text DEFAULT NULL,
-  `diagnostico` text DEFAULT NULL,
-  `exames_solicitados` text DEFAULT NULL
+  `descricao` text NOT NULL,
+  `prescricao` text NOT NULL,
+  `diagnostico` text NOT NULL,
+  `exames_solicitados` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -52,9 +52,9 @@ CREATE TABLE `disponibilidade` (
   `id` int(11) NOT NULL,
   `profissional_id` int(11) NOT NULL,
   `data_horario` datetime NOT NULL,
-  `duracao_consulta` int(11) DEFAULT NULL,
-  `disponivel` tinyint(1) DEFAULT 1,
-  `bloqueado` tinyint(1) DEFAULT 0
+  `duracao_consulta` int(11) NOT NULL,
+  `disponivel` tinyint(1) NOT NULL DEFAULT 1,
+  `bloqueado` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -65,8 +65,8 @@ CREATE TABLE `disponibilidade` (
 
 CREATE TABLE `especialidade` (
   `id` int(11) NOT NULL,
-  `nome` varchar(100) DEFAULT NULL,
-  `descricao` text DEFAULT NULL
+  `nome` varchar(100) NOT NULL,
+  `descricao` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -77,11 +77,11 @@ CREATE TABLE `especialidade` (
 
 CREATE TABLE `paciente` (
   `id` int(11) NOT NULL,
-  `nome` varchar(100) DEFAULT NULL,
-  `telefone` varchar(15) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `cpf` varchar(14) DEFAULT NULL,
-  `data_nascimento` date DEFAULT NULL,
+  `nome` varchar(100) NOT NULL,
+  `telefone` varchar(15) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `cpf` varchar(14) NOT NULL,
+  `data_nascimento` date NOT NULL,
   `obs_medicas` text DEFAULT NULL,
   `bairro` varchar(30) NOT NULL,
   `rua` varchar(30) NOT NULL,
@@ -100,7 +100,7 @@ CREATE TABLE `paciente_plano` (
   `id` int(11) NOT NULL,
   `paciente_id` int(11) NOT NULL,
   `plano_id` int(11) NOT NULL,
-  `validade` date DEFAULT NULL,
+  `validade` date NOT NULL,
   `numero_registro` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -112,7 +112,7 @@ CREATE TABLE `paciente_plano` (
 
 CREATE TABLE `plano_saude` (
   `id` int(11) NOT NULL,
-  `nome` varchar(100) DEFAULT NULL
+  `nome` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -123,20 +123,21 @@ CREATE TABLE `plano_saude` (
 
 CREATE TABLE `profissional` (
   `id` int(11) NOT NULL,
-  `nome` varchar(100) DEFAULT NULL,
-  `sexo` varchar(5) DEFAULT NULL,
-  `data_nascimento` date DEFAULT NULL,
-  `telefone` varchar(15) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `tempo_experiencia` varchar(15) DEFAULT NULL,
-  `nivel` varchar(50) DEFAULT NULL,
-  `instituicao_formacao` varchar(100) DEFAULT NULL,
+  `nome` varchar(100) NOT NULL,
+  `sexo` varchar(5) NOT NULL,
+  `data_nascimento` date NOT NULL,
+  `telefone` varchar(15) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `tempo_experiencia` varchar(15) NOT NULL,
+  `nivel` varchar(50) NOT NULL,
+  `instituicao_formacao` varchar(100) NOT NULL,
   `especialidade_medica_id` int(11) DEFAULT NULL,
   `bairro` varchar(30) NOT NULL,
   `rua` varchar(30) NOT NULL,
   `numero_residencia` int(11) NOT NULL,
   `cep` varchar(8) NOT NULL,
-  `cpf` varchar(20) NOT NULL
+  `cpf` varchar(20) NOT NULL,
+  `crm` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
