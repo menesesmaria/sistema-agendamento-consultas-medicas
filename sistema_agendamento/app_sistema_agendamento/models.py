@@ -1,6 +1,10 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 
+LETRAS_ALFABETO = [(chr(i), chr(i)) for i in range(ord('A'), ord('Z') + 1)]
+NUMEROS_SUBGRUPO = [(i, str(i)) for i in range(1, 22)]
+NUMEROS_SUBCATEGORIA = [(i, str(i)) for i in range(0, 10)]
+
 # Create your models here.
 
 class Especialidade(models.Model):
@@ -9,16 +13,34 @@ class Especialidade(models.Model):
 
     def __str__(self):
         return self.nome
-
-
-    def __str__(self):
-        return self.nome 
         
 class PlanoSaude(models.Model):
     nome = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return self.nome 
+
+class Cid(models.Model):
+    capitulo = models.CharField(
+        max_length=1,
+        choices=LETRAS_ALFABETO,
+        null=True, 
+        blank=True)  
+    subgrupo = models.IntegerField(
+        choices=NUMEROS_SUBGRUPO,
+        null=True, 
+        blank=True)
+    nome = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.capitulo}{self.subgrupo} - {self.nome}"
+    
+class Exame(models.Model):
+    nome = models.CharField(max_length=100, null=True, blank=True)
+    descricao = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.nome}"
 
 class Sexo(models.TextChoices):
     masculino = 'Masculino'
@@ -31,7 +53,7 @@ class Situacao(models.TextChoices):
     urgente = 'Urgente - Atendimento em até 60 minutos'
     pouco_urgente = 'Pouco urgente - Atendimento em até 2 horas'
     nao_urgente = 'Não urgente - Atendimento em até 4 horas'
-
+    
 class Paciente(models.Model):
     nome = models.CharField(max_length=100, null=True, blank=True)
     telefone = models.CharField(max_length=15, null=True, blank=True)
@@ -56,6 +78,8 @@ class Profissional(models.Model):
     sexo = models.CharField(
         max_length=10,
         choices=Sexo.choices,
+        null=True, 
+        blank=True
     )
     data_nascimento = models.DateField(null=True, blank=True)
     telefone = models.CharField(max_length=15, null=True, blank=True)
@@ -98,9 +122,12 @@ class Consulta(models.Model):
     pagamento = models.CharField(max_length=50, null=True, blank=True)
     plano_saude = models.ForeignKey(PlanoSaude, on_delete=models.SET_NULL, null=True)
     descricao = models.TextField(null=True, blank=True)
-    prescricao = models.TextField(null=True, blank=True)
-    diagnostico = models.TextField(null=True, blank=True)
-    exames_solicitados = models.TextField(null=True, blank=True)
+    cid = models.ForeignKey(Cid, on_delete=models.SET_NULL, null=True)
+    subcategoria =  models.IntegerField(
+        choices=NUMEROS_SUBCATEGORIA,
+        null=True, 
+        blank=True)
+    exames_solicitados = models.ForeignKey(Exame, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return f"Consulta de {self.paciente} com {self.profissional} em {self.disponibilidade.data_horario.strftime('%d/%m/%Y %H:%M')}"
