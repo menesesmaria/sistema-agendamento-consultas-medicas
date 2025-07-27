@@ -84,7 +84,6 @@ class Profissional(models.Model):
     data_nascimento = models.DateField(null=True, blank=True)
     telefone = models.CharField(max_length=15, null=True, blank=True)
     email = models.EmailField(max_length=100, null=True, blank=True)
-    tempo_experiencia = models.CharField(max_length=15, null=True, blank=True)
     nivel = models.CharField(max_length=50, null=True, blank=True)
     instituicao_formacao = models.CharField(max_length=100, null=True, blank=True)
     especialidades_medicas = models.ManyToManyField(Especialidade)
@@ -110,7 +109,7 @@ class Disponibilidade(models.Model):
         status = "Disponível" if self.disponivel else "Indisponível"
         return f"{self.profissional} - {self.data_horario.strftime('%d/%m/%Y %H:%M')} ({status})"
 
-class Consulta(models.Model):
+class Agendamento(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.SET_NULL, null=True)
     profissional = models.ForeignKey(Profissional, on_delete=models.SET_NULL, null=True)
     disponibilidade = models.ForeignKey(Disponibilidade, on_delete=models.SET_NULL, null=True, blank=True)
