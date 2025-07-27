@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 LETRAS_ALFABETO = [(chr(i), chr(i)) for i in range(ord('A'), ord('Z') + 1)]
 NUMEROS_SUBGRUPO = [(i, str(i)) for i in range(1, 22)]
@@ -100,11 +101,20 @@ class Profissional(models.Model):
         return f"{self.nome} - {especialidades} - CRM: {self.crm}"
 
 class Disponibilidade(models.Model):
-    profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
+    profissional = models.ForeignKey('Profissional', on_delete=models.CASCADE)
     data_horario = models.DateTimeField()
     duracao_consulta = models.IntegerField(null=True, blank=True)
     disponivel = models.BooleanField(default=True)
     bloqueado = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.data_horario < timezone.now():
+            self.disponivel = False
+            self.bloqueado = True
+        else:
+            self.disponivel = True
+            self.bloqueado = False
+        super().save(*args, **kwargs)
 
     def __str__(self):
         status = "Disponível" if self.disponivel else "Indisponível"
@@ -113,7 +123,15 @@ class Disponibilidade(models.Model):
 class Consulta(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.SET_NULL, null=True)
     profissional = models.ForeignKey(Profissional, on_delete=models.SET_NULL, null=True)
-    disponibilidade = models.ForeignKey(Disponibilidade, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    disponibilidade = models.ForeignKey(
+        Disponibilidade,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        limit_choices_to={'disponivel': True, 'bloqueado': False}
+    )
+
     situacao = models.CharField(
         max_length=45,
         choices=Situacao.choices,
@@ -123,14 +141,16 @@ class Consulta(models.Model):
     plano_saude = models.ForeignKey(PlanoSaude, on_delete=models.SET_NULL, null=True)
     descricao = models.TextField(null=True, blank=True)
     cid = models.ForeignKey(Cid, on_delete=models.SET_NULL, null=True)
-    subcategoria =  models.IntegerField(
+    subcategoria = models.IntegerField(
         choices=NUMEROS_SUBCATEGORIA,
-        null=True, 
-        blank=True)
+        null=True,
+        blank=True
+    )
     exames_solicitados = models.ForeignKey(Exame, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return f"Consulta de {self.paciente} com {self.profissional} em {self.disponibilidade.data_horario.strftime('%d/%m/%Y %H:%M')}"
+
 
 class PacientePlano(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
