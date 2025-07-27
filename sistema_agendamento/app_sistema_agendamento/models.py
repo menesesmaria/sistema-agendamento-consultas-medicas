@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 # Create your models here.
 
 class Especialidade(models.Model):
-    nome = models.CharField(max_length=100, default="Selecionar")
+    nome = models.CharField(max_length=100, null=True, blank=True)
     descricao = models.TextField(null=True, blank=True)
 
     def __str__(self):
