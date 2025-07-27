@@ -1,14 +1,19 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 
 class Especialidade(models.Model):
-    nome = models.CharField(max_length=100, null=True, blank=True)
+    nome = models.CharField(max_length=100, default="Selecionar")
     descricao = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return self.nome 
+        return self.nome
 
+
+    def __str__(self):
+        return self.nome 
+        
 class PlanoSaude(models.Model):
     nome = models.CharField(max_length=100, null=True, blank=True)
 
@@ -28,16 +33,16 @@ class Situacao(models.TextChoices):
     nao_urgente = 'Não urgente - Atendimento em até 4 horas'
 
 class Paciente(models.Model):
-    nome = models.CharField(max_length=100)
-    telefone = models.CharField(max_length=15)
-    email = models.EmailField(max_length=100)
-    cpf = models.CharField(max_length=14)
+    nome = models.CharField(max_length=100, null=True, blank=True)
+    telefone = models.CharField(max_length=15, null=True, blank=True)
+    email = models.EmailField(max_length=100, null=True, blank=True)
+    cpf = models.CharField(max_length=14, null=True, blank=True)
     data_nascimento = models.DateField
     obs_medicas = models.TextField
-    bairro = models.CharField(max_length=30)
-    rua = models.CharField(max_length=30)
+    bairro = models.CharField(max_length=30, null=True, blank=True)
+    rua = models.CharField(max_length=30, null=True, blank=True)
     numero_residencia = models.IntegerField()
-    cep = models.CharField(max_length=8)
+    cep = models.CharField(max_length=8, null=True, blank=True)
     sexo = models.CharField(
         max_length=10,
         choices=Sexo.choices,
@@ -58,8 +63,7 @@ class Profissional(models.Model):
     tempo_experiencia = models.CharField(max_length=15, null=True, blank=True)
     nivel = models.CharField(max_length=50, null=True, blank=True)
     instituicao_formacao = models.CharField(max_length=100, null=True, blank=True)
-    especialidade_medica1 = models.ForeignKey(Especialidade, on_delete=models.SET_NULL, null=True)
-    especialidade_medica2 = models.ForeignKey(Especialidade, on_delete=models.SET_NULL, null=True)
+    especialidades_medicas = models.ManyToManyField(Especialidade)
     bairro = models.CharField(max_length=30)
     rua = models.CharField(max_length=30)
     numero_residencia = models.IntegerField()
@@ -68,7 +72,8 @@ class Profissional(models.Model):
     crm = models.CharField(max_length=20, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.nome} - {self.especialidade_medica1} - CRM: {self.crm}"
+        especialidades = ', '.join([e.nome for e in self.especialidades_medicas.all()])
+        return f"{self.nome} - {especialidades} - CRM: {self.crm}"
 
 class Disponibilidade(models.Model):
     profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
@@ -88,6 +93,7 @@ class Consulta(models.Model):
     situacao = models.CharField(
         max_length=45,
         choices=Situacao.choices,
+        default="Selecionar"
     )
     pagamento = models.CharField(max_length=50, null=True, blank=True)
     plano_saude = models.ForeignKey(PlanoSaude, on_delete=models.SET_NULL, null=True)
