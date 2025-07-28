@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from datetime import date
 
 LETRAS_ALFABETO = [(chr(i), chr(i)) for i in range(ord('A'), ord('Z') + 1)]
 NUMEROS_SUBGRUPO = [(i, str(i)) for i in range(1, 22)]
@@ -169,17 +168,6 @@ class Consulta(models.Model):
             disponivel=True,
             bloqueado=False
         ).distinct()
-    
-    @property
-    def plano_vencido(self):
-        if not self.paciente or not self.plano_saude:
-            return None
-        try:
-            relacao = PacientePlano.objects.get(paciente=self.paciente, plano=self.plano_saude)
-            return relacao.is_vencido()
-        except PacientePlano.DoesNotExist:
-            return None  # Ou True, se quiser bloquear por padrão
-
 
 
 
@@ -188,15 +176,26 @@ class PacientePlano(models.Model):
     plano = models.ForeignKey(PlanoSaude, on_delete=models.CASCADE)
     validade = models.DateField(null=True, blank=True)
     numero_registro = models.IntegerField()
+    disponivel = models.BooleanField(default=True)
+    bloqueado = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.validade and self.validade < timezone.now().date():
+            self.disponivel = False
+            self.bloqueado = True
+        else:
+            self.disponivel = True
+            self.bloqueado = False
+        super().save(*args, **kwargs)
 
     class Meta:
         unique_together = (('paciente', 'plano'),)
 
     def __str__(self):
-        return f"{self.paciente} - {self.plano}"
-
-    def is_vencido(self):
-        return self.validade and self.validade < date.today()
+        status = "Disponível" if self.disponivel else "Indisponível"
+        validade_str = self.validade.strftime('%d/%m/%Y') if self.validade else "Sem validade"
+        return f"{self.paciente} - {self.plano} ({validade_str}) ({status})"   
+    
 
 class ProfissionalPlano(models.Model):
     profissional = models.ForeignKey(Profissional, on_delete=models.CASCADE)
