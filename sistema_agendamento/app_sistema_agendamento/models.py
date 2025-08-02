@@ -6,7 +6,33 @@ NUMEROS_SUBGRUPO = [(i, str(i)) for i in range(1, 22)]
 NUMEROS_SUBCATEGORIA = [(i, str(i)) for i in range(0, 10)]
 
 # Create your models here.
+class Estado(models.Model):
+    nome = models.CharField(max_length=100, null=True, blank=True)
+    sigla = models.CharField(max_length=2, null=True, blank=True)
 
+    def __str__(self):
+        return f"{self.nome}"
+
+class Cidade(models.Model):
+    nome = models.CharField(max_length=100, null=True, blank=True)
+    cep = models.CharField(max_length=9, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.nome}"
+    
+class Bairro(models.Model):
+    nome = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.nome}"
+    
+class Logradouro(models.Model):
+    nome = models.CharField(max_length=100, null=True, blank=True)
+    cep = models.CharField(max_length=9, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.nome}"
+    
 class Especialidade(models.Model):
     nome = models.CharField(max_length=100, null=True, blank=True)
     descricao = models.TextField(null=True, blank=True)
@@ -47,13 +73,15 @@ class Sexo(models.TextChoices):
     feminino = 'Feminino'
     outro = 'Outro'
 
+'''
 class Situacao(models.TextChoices):
     emergencia = 'Emergência - Atendimento imediato'
     muito_urgente = 'Muito urgente - Atendimento em até 10 minutos'
     urgente = 'Urgente - Atendimento em até 60 minutos'
     pouco_urgente = 'Pouco urgente - Atendimento em até 2 horas'
     nao_urgente = 'Não urgente - Atendimento em até 4 horas'
-    
+'''    
+
 class Paciente(models.Model):
     nome = models.CharField(max_length=100, null=True, blank=True)
     telefone = models.CharField(max_length=15, null=True, blank=True)
@@ -61,10 +89,11 @@ class Paciente(models.Model):
     cpf = models.CharField(max_length=14, null=True, blank=True)
     data_nascimento = models.DateField
     obs_medicas = models.TextField
-    bairro = models.CharField(max_length=30, null=True, blank=True)
-    rua = models.CharField(max_length=30, null=True, blank=True)
+    estado = models.ForeignKey(Estado, on_delete=models.SET_NULL, null=True)
+    cidade = models.ForeignKey(Cidade, on_delete=models.SET_NULL, null=True)
+    bairro = models.ForeignKey(Bairro, on_delete=models.SET_NULL, null=True)
+    logradouro = models.ForeignKey(Logradouro, on_delete=models.SET_NULL, null=True)
     numero_residencia = models.IntegerField()
-    cep = models.CharField(max_length=8, null=True, blank=True)
     sexo = models.CharField(
         max_length=10,
         choices=Sexo.choices,
@@ -87,10 +116,11 @@ class Profissional(models.Model):
     nivel = models.CharField(max_length=50, null=True, blank=True)
     instituicao_formacao = models.CharField(max_length=100, null=True, blank=True)
     especialidades_medicas = models.ManyToManyField(Especialidade)
-    bairro = models.CharField(max_length=30)
-    rua = models.CharField(max_length=30)
+    estado = models.ForeignKey(Estado, on_delete=models.SET_NULL, null=True)
+    cidade = models.ForeignKey(Cidade, on_delete=models.SET_NULL, null=True)
+    bairro = models.ForeignKey(Bairro, on_delete=models.SET_NULL, null=True)
+    logradouro = models.ForeignKey(Logradouro, on_delete=models.SET_NULL, null=True)
     numero_residencia = models.IntegerField()
-    cep = models.CharField(max_length=8)
     cpf = models.CharField(max_length=20)
     crm = models.CharField(max_length=20, null=True, blank=True)
 
@@ -113,23 +143,29 @@ class Agendamento(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.SET_NULL, null=True)
     profissional = models.ForeignKey(Profissional, on_delete=models.SET_NULL, null=True)
     disponibilidade = models.ForeignKey(Disponibilidade, on_delete=models.SET_NULL, null=True, blank=True)
+    '''
     situacao = models.CharField(
         max_length=45,
         choices=Situacao.choices,
         default="Selecionar"
     )
+    '''
     pagamento = models.CharField(max_length=50, null=True, blank=True)
     plano_saude = models.ForeignKey(PlanoSaude, on_delete=models.SET_NULL, null=True)
-    descricao = models.TextField(null=True, blank=True)
+    observacoes = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Consulta de {self.paciente} com {self.profissional} em {self.disponibilidade.data_horario.strftime('%d/%m/%Y %H:%M')}"
+    
+class Consulta(models.Model):
+    agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True)
     cid = models.ForeignKey(Cid, on_delete=models.SET_NULL, null=True)
     subcategoria =  models.IntegerField(
         choices=NUMEROS_SUBCATEGORIA,
         null=True, 
         blank=True)
-    exames_solicitados = models.ForeignKey(Exame, on_delete=models.SET_NULL, null=True)
-
-    def __str__(self):
-        return f"Consulta de {self.paciente} com {self.profissional} em {self.disponibilidade.data_horario.strftime('%d/%m/%Y %H:%M')}"
+    exames_solicitados = models.ManyToManyField(Exame)
+    observacoes = models.TextField(null=True, blank=True)
 
 class PacientePlano(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
